@@ -1,0 +1,5 @@
+{
+    "function": "validAnagram",
+    "params": ["apple", "elppa"],
+    "id": 0
+}

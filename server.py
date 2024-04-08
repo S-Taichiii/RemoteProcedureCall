@@ -6,14 +6,16 @@ import json
 class Function:
     @classmethod
     def function(cls, function: str, params: list):
-        functions = {
-            "floor": Function.floor(params),
-            "nroot": Function.nroot(params),
-            "reverse": Function.reverse(params),
-            "validAnagram": Function.validAnagram(params),
-            "sort": Function.sort(params)
-        }
-        return functions[function]
+        if function == "floor":
+            return Function.floor(params)
+        elif function == "nroot":
+            return Function.nroot(params)
+        elif function == 'reverse':
+            return Function.reverse(params)
+        elif function == "validAnagram":
+            return Function.validAnagram(params)
+        else:
+            return Function.sort(params)
         
     @staticmethod
     def floor(params: list) -> float:
@@ -22,8 +24,8 @@ class Function:
     
     @staticmethod
     def nroot(params: list) -> float:
-        n = params[0]
-        x = params[1]
+        x = params[0]
+        n = params[1]
         return math.pow(x, 1/n)
     
     @staticmethod
@@ -59,7 +61,7 @@ class UnixServer:
         if os.path.exists(self.path):
             os.unlink(self.path)
 
-    def accept(self, address: str="socket.sock", family :int=socket.AF_UNIX, type: int = socket.SOCK_STREAM, proto: int=0):
+    def accept(self, address: str="/tmp/socket.sock", family :int=socket.AF_UNIX, type: int = socket.SOCK_STREAM, proto: int=0):
         self.path = address
         self.delete()
         self.socket = socket.socket(family, type, proto)
@@ -90,26 +92,30 @@ class UnixServer:
             print('Closing current connection.')
             self.close()
 
-    def resp(self, json_recv):
+    def resp(self, json_recv: str):
         print(f'Input json: {json_recv}')
 
-        json_dict = json.load(json_recv)
+        json_dict = json.loads(json_recv)
 
         function = json_dict['function']
         params = json_dict['params']
         id = json_dict['id']
 
         result = Function.function(function, params)
-        result_type = type(result)
-        result_id = id
+        result_type = str(type(result))
+        result_id: int = id
 
         results = {
             "result": result,
             "result_type": result_type,
             "result_id": result_id
         }
+
         resp = json.dumps(results)
 
         return resp
         
         
+if __name__ == "__main__":
+    server = UnixServer()
+    server.accept()
